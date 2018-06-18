@@ -29,20 +29,33 @@ class UrlHasher():
                 os.mkdir(hashdir)
 
     """
+    Hash the url
+    """
+    def hash_url(self, u):
+        return hashlib.sha256(u).hexdigest()
+
+
+    def parse_url(self, u):
+        return urlparse.urlparse(u)
+
+    """
     Entrypoint
     """
     def main(self):
         self.createdirs()
         while True:
             u = raw_input("Enter a url: ")
-            result = urlparse.urlparse(u)
+            result = self.parse_url(u)
+
             # Somebody input junk
             if (not result[1]):
                 print "Bad url!"
                 return(0)
+
             # hash the url
-            h = hashlib.sha256(u).hexdigest()
+            h = self.hash_url(u)
             print "Got hash %s" % h
+
             # find the diretory
             partf = TMPDIR + '/' + h[:4] + '/' + h
             # See if the url exists, if so print it out
