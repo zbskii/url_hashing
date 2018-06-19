@@ -17,7 +17,7 @@ class UrlHasher():
     Generate nice zero padded hex strings with no leading 0x
     """
     def digits(self):
-        return [hex(x)[2:].zfill(4) for x in range(65537)]
+        return [hex(x)[2:].zfill(4) for x in range(2**16)]
 
     def createdirs(self):
         """
@@ -58,7 +58,8 @@ class UrlHasher():
             fp.flush()
 
     def purge(self):
-        shutil.rmtree(TMPDIR)
+        if(os.path.exists(TMPDIR)):
+            shutil.rmtree(TMPDIR)
 
     """
     Entrypoint

@@ -40,8 +40,6 @@ class TestUrlHashing(unittest.TestCase):
         random.seed() ## We want to test the distribution
         hist = {b: 0 for b in self.hasher.digits()}
         for i in range(2**20):
-            if not i % 10000:
-                sys.stdout.write('.')
             u = "www.%s.com/%s" % (self.randstring(12), self.randstring(32))
             h = self.hasher.hash_url(u)
             bucket = h[:4]
