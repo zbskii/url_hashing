@@ -1,11 +1,13 @@
 import hashlib
 import urlparse
 import os.path
+import shutil
 
 TMPDIR="/tmp/urlhasher"
 
 """
-Hash urls into pre-determined partitions
+Partition a set of urls across pre-defined partitions.
+We use a default 
 """
 
 class UrlHasher():
@@ -14,12 +16,12 @@ class UrlHasher():
     Generate nice zero padded hex strings with no leading 0x
     """
     def digits(self):
-        return [hex(x)[2:].zfill(4) for x in range(65536)]
+        return [hex(x)[2:].zfill(4) for x in range(2**16)]
 
-    """
-    Check to see if our hex partitions exist
-    """
     def createdirs(self):
+        """
+        Check to see if our hex partitions exist
+        """
         if(not os.path.exists(TMPDIR)):
             os.mkdir(TMPDIR)
             os.chdir(TMPDIR)
@@ -29,14 +31,33 @@ class UrlHasher():
                 os.mkdir(hashdir)
 
     """
-    Hash the url
+    partition utility functions
     """
     def hash_url(self, u):
         return hashlib.sha256(u).hexdigest()
 
+    def get_file(self, h):
+        return TMPDIR + '/' + h[:4] + '/' + h
 
     def parse_url(self, u):
         return urlparse.urlparse(u)
+
+    def record_exists(self, h):
+         return os.path.exists(self.get_file(h))
+
+    def read_record(self, h):
+        if not self.record_exists(h):
+            return False
+        return open(self.get_file(h)).readlines()
+
+    def write_record(self, h, u):
+        partf = self.get_file(h)
+        with open(partf, 'w') as fp:
+            fp.write(u)
+            fp.flush()
+
+    def purge(self):
+        shutil.rmtree(TMPDIR)
 
     """
     Entrypoint
@@ -59,10 +80,9 @@ class UrlHasher():
             # find the diretory
             partf = TMPDIR + '/' + h[:4] + '/' + h
             # See if the url exists, if so print it out
-            if os.path.exists(partf):
-                print open(partf).readlines()
+            if self.record_exists(h):
+                print self.read_record(h)
             else:
                 print "File not found in %s saving..." % partf
-                fp = open(partf, 'w')
-                fp.write(u)
+                self.write_record(h, u)
                 print "Done!"
