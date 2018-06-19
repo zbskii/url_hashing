@@ -1,7 +1,9 @@
-import unittest
+import collections
 import random
 import string
+import unittest
 import urlhash
+import sys
 
 class TestUrlHashing(unittest.TestCase):
 
@@ -29,14 +31,17 @@ class TestUrlHashing(unittest.TestCase):
             self.assertTrue(r[0], u)
 
     def test_distribution(self):
-        hist = {}
-        for i in range(2**16):
+        random.seed() ## We want to test the distribution
+        hist = {b: 0 for b in self.hasher.digits()}
+        for i in range(2**20):
+            if not i % 10000:
+                sys.stdout.write('.')
             u = "www.%s.com/%s" % (self.randstring(12), self.randstring(32))
             h = self.hasher.hash_url(u)
             bucket = h[:4]
-            hist[bucket] = hist.setdefault(bucket, 0) + 1
-        print "Found %d keys" % len(hist.keys())
-        for k, v in hist.items():
-            if v == 0:
-                print "%s: %s" % (k, v*'*')
+            hist[bucket] += 1
+        vals = collections.Counter(hist.values())
+        print "Key distribution histogram"
+        for n,c in sorted(vals.items()):
+            print "%s: %s" % (n, c)
 
