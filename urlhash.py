@@ -6,8 +6,9 @@ import shutil
 TMPDIR="/tmp/urlhasher"
 
 """
-Partition a set of urls across pre-defined partitions.
-We use a default 
+Partition a set of urls across pre-defined partitions.  The example
+here simply uses urls, but could be extended to arbitrary records of
+data.
 """
 
 class UrlHasher():
@@ -16,7 +17,7 @@ class UrlHasher():
     Generate nice zero padded hex strings with no leading 0x
     """
     def digits(self):
-        return [hex(x)[2:].zfill(4) for x in range(2**16)]
+        return [hex(x)[2:].zfill(4) for x in range(65537)]
 
     def createdirs(self):
         """

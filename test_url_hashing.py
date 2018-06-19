@@ -19,6 +19,9 @@ class TestUrlHashing(unittest.TestCase):
             self.urls.append(u)
 
     def test_hasher(self):
+        """
+        Basic sanity check
+        """
         self.hasher.purge()
         self.hasher.createdirs()
         for u in self.urls:
@@ -31,6 +34,9 @@ class TestUrlHashing(unittest.TestCase):
             self.assertTrue(r[0], u)
 
     def test_distribution(self):
+        """
+        Tests the distribution of urls; prints out a histogram.
+        """
         random.seed() ## We want to test the distribution
         hist = {b: 0 for b in self.hasher.digits()}
         for i in range(2**20):
